@@ -9,7 +9,7 @@
 	"workspaceFolder": "/workspaces/spacesdk-client",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/spacesdk-client,type=bind,consistency=cached",
 	"features": {
-		"ghcr.io/microsoft/azure-orbital-space-sdk/spacefx-dev:0.11.0_ryan_test": {
+		"ghcr.io/microsoft/azure-orbital-space-sdk/spacefx-dev:0.11.0": {
 			"app_name": "spacesdk-client",
 			"app_type": "spacesdk-client"
 		}

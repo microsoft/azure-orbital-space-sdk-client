@@ -25,14 +25,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="/var/spacedev/protos/spacefx/position/Position.proto" GrpcServices="Client" Access="Public" ProtoCompile="True" CompileOutputs="True" ProtoRoot="/var/spacedev/protos" OutputDir="obj/Debug/net6.0/"></Protobuf>
-    <Protobuf Include="/var/spacedev/protos/spacefx/sensor/Sensor.proto" GrpcServices="Client" Access="Public" ProtoCompile="True" CompileOutputs="True" ProtoRoot="/var/spacedev/protos" OutputDir="obj/Debug/net6.0/"></Protobuf>
+    <Protobuf Include="/var/spacedev/protos/spacefx/position/Position.proto" GrpcServices="Client" Access="Public" ProtoCompile="True" CompileOutputs="True" ProtoRoot="/var/spacedev/protos" OutputDir="obj/$(Configuration)/net6.0/"></Protobuf>
+    <Protobuf Include="/var/spacedev/protos/spacefx/sensor/Sensor.proto" GrpcServices="Client" Access="Public" ProtoCompile="True" CompileOutputs="True" ProtoRoot="/var/spacedev/protos" OutputDir="obj/$(Configuration)/net6.0/"></Protobuf>
     <Protobuf Include="/var/spacedev/protos/spacefx/link/Link.proto" GrpcServices="Client" Access="Public" ProtoCompile="True" CompileOutputs="True" ProtoRoot="/var/spacedev/protos" OutputDir="obj/Debug/net6.0/"></Protobuf>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Message Importance="high" Text="Output path: $(OutputPath)" />
-    <Message Importance="high" Text="Project Dir: $(MSBuildProjectDirectory)" />
-    <Exec Command="bash /workspaces/spacesdk-client/.vscode/projectPostBuild.sh --$(LowercaseConfiguration) --target-dir $(OutputPath)" />
-  </Target>
 </Project>
 
