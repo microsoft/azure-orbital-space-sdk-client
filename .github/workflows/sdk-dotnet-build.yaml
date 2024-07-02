@@ -1,0 +1,48 @@
+name: sdk-dotnet-build
+
+on: 
+    workflow_dispatch:
+    push:
+        branches:
+        - main
+
+jobs:
+  build-sdk-dotnet-amd64:
+    permissions:
+      contents: read
+      packages: write
+
+    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/service-build.yml@main
+    with:
+      APP_PROJECT: ./src/spacesdk-client.csproj
+      NUGET_PROJECT: ./src/spacesdk-client.csproj
+      OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
+      NUGET_STAGING_DIRECTORY: /var/spacedev/nuget/spacesdk-client
+      NUGET_FILE_PREFIX: Microsoft.Azure.SpaceSDK.Client
+      ANNOTATION: azure-orbital-space-sdk-sdk-client.yaml
+      WORKFLOW_AGENT: ubuntu-latest
+      ARCHITECTURE: amd64
+    secrets:
+      GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
+      GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
+      SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
+
+  build-sdk-dotnet-arm64:
+    permissions:
+      contents: read
+      packages: write
+
+    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/service-build.yml@main
+    with:
+      APP_PROJECT: ./src/spacesdk-client.csproj
+      NUGET_PROJECT: ./src/spacesdk-client.csproj
+      OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
+      NUGET_STAGING_DIRECTORY: /var/spacedev/nuget/spacesdk-client
+      NUGET_FILE_PREFIX: Microsoft.Azure.SpaceSDK.Client
+      ANNOTATION: azure-orbital-space-sdk-sdk-client.yaml
+      WORKFLOW_AGENT: ubuntu-latest
+      ARCHITECTURE: ard64
+    secrets:
+      GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
+      GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
+      SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
