@@ -3,8 +3,6 @@ name: sdk-dotnet-build
 on: 
     workflow_dispatch:
     push:
-        branches:
-        - main
 
 jobs:
   build-sdk-dotnet-amd64:
