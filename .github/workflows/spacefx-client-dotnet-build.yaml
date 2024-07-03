@@ -5,7 +5,7 @@ on:
     push:
 
 jobs:
-  build-sdk-dotnet-amd64:
+  build-spacefx-client-dotnet-amd64:
     permissions:
       contents: read
       packages: write
@@ -17,7 +17,7 @@ jobs:
       OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
       NUGET_STAGING_DIRECTORY: /var/spacedev/nuget/spacesdk-client
       NUGET_FILE_PREFIX: Microsoft.Azure.SpaceSDK.Client
-      ANNOTATION: azure-orbital-space-sdk-sdk-client.yaml
+      ANNOTATION: azure-orbital-space-sdk-client.yaml
       WORKFLOW_AGENT: ubuntu-latest
       ARCHITECTURE: amd64
     secrets:
@@ -25,7 +25,7 @@ jobs:
       GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
       SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
 
-  build-sdk-dotnet-arm64:
+  build-spacefx-client-dotnet-arm64:
     permissions:
       contents: read
       packages: write
@@ -37,7 +37,7 @@ jobs:
       OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
       NUGET_STAGING_DIRECTORY: /var/spacedev/nuget/spacesdk-client
       NUGET_FILE_PREFIX: Microsoft.Azure.SpaceSDK.Client
-      ANNOTATION: azure-orbital-space-sdk-sdk-client.yaml
+      ANNOTATION: azure-orbital-space-sdk-client.yaml
       WORKFLOW_AGENT: ubuntu-latest
       ARCHITECTURE: ard64
     secrets:
