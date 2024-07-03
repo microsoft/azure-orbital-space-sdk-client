@@ -1,4 +1,4 @@
-name: test-template-sdk-dotnet
+name: test-template-spacefx-client-dotnet
 on:
     workflow_call:
       inputs:
