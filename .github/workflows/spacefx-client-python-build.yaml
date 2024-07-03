@@ -1,4 +1,4 @@
-name: spacefx-client-dotnet-build
+name: spacfx-client-python-build
 
 on: 
     workflow_dispatch:
@@ -10,7 +10,7 @@ jobs:
       contents: read
       packages: write
 
-    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/service-build.yml@main
+    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/python-app-build.yml@main
     with:
       APP_PROJECT: ./src/spacesdk-client.csproj
       NUGET_PROJECT: ./src/spacesdk-client.csproj
@@ -30,7 +30,7 @@ jobs:
       contents: read
       packages: write
 
-    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/service-build.yml@main
+    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/python-app-build.yml@main
     with:
       APP_PROJECT: ./src/spacesdk-client.csproj
       NUGET_PROJECT: ./src/spacesdk-client.csproj
