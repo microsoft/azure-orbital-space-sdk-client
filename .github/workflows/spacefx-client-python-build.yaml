@@ -19,6 +19,7 @@ jobs:
       ANNOTATION: azure-orbital-space-sdk-client.yaml
       WORKFLOW_AGENT: ubuntu-latest
       ARCHITECTURE: amd64
+      BUILD_PYTHON_WHEEL: true
     secrets:
       GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
       GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
