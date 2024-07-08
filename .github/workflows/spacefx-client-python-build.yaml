@@ -2,7 +2,8 @@ name: spacfx-client-python-build
 
 on: 
     workflow_dispatch:
-    push:
+    pull_request:
+      branches: [ main ]
 
 jobs:
   build-spcaefx-client-python-amd64:
