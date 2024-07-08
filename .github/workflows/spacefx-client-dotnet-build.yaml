@@ -39,7 +39,7 @@ jobs:
       NUGET_FILE_PREFIX: Microsoft.Azure.SpaceSDK.Client
       ANNOTATION: azure-orbital-space-sdk-client.yaml
       WORKFLOW_AGENT: ubuntu-latest
-      ARCHITECTURE: ard64
+      ARCHITECTURE: arm64
     secrets:
       GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
       GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
