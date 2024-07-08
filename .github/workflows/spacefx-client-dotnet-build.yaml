@@ -38,7 +38,7 @@ jobs:
       NUGET_STAGING_DIRECTORY: /var/spacedev/nuget/spacesdk-client
       NUGET_FILE_PREFIX: Microsoft.Azure.SpaceSDK.Client
       ANNOTATION: azure-orbital-space-sdk-client.yaml
-      WORKFLOW_AGENT: ubuntu-latest
+      WORKFLOW_AGENT: spacesdk-ubuntu-2204LTS-arm64
       ARCHITECTURE: arm64
     secrets:
       GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
