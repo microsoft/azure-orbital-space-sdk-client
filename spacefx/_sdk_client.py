@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 import pythonnet
 
 
@@ -67,7 +66,7 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(DOTNET_DIR, 'Microsoft.
 
 
 # Load the client adapter library which is in the parent directory / spacefxClient
-base_dir = Path(__file__).parent / 'spacefxClient'
+base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spacefxClient')
 
 # Find "spacesdk-client.dll" in any subdirectory
 spacesdk_client_dll = next(base_dir.rglob('spacesdk-client.dll'), None)
