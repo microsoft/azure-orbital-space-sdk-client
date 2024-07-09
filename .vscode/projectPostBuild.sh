@@ -24,7 +24,7 @@
 #-------------------------------------------------------------------------------------------------------------
 source "${SPACEFX_DIR:?}/modules/load_modules.sh" $@ --log_dir "${SPACEFX_DIR:?}/logs/${APP_NAME:?}"
 
-cd /workspaces/spacesdk-client
+cd ${CONTAINER_WORKING_DIR}
 
 ############################################################
 # Script variables
@@ -32,8 +32,9 @@ cd /workspaces/spacesdk-client
 DEBUG=false
 RELEASE=false
 TARGET_DIR=""
-PYTHON_DLL_DIR="/workspaces/spacesdk-client/spacefx/spacefxClient"
-DOTNET_DLL_BUILD_DIR_PREFIX="/workspaces/spacesdk-client/src/bin"
+
+PYTHON_DLL_DIR="${CONTAINER_WORKING_DIR}/spacefx/spacefxClient"
+DOTNET_DLL_BUILD_DIR_PREFIX="${CONTAINER_WORKING_DIR}/src/bin"
 DOTNET_DLL_BUILD_DIR_SUFFIX="/net6.0"
 DOTNET_DLL_BUILD_DIR=""
 ############################################################
