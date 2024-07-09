@@ -34,6 +34,29 @@
             "requireExactSource": true
         },
         {
+            "name": "DebugClient (Python)",
+            "type": "debugpy",
+            "request": "attach",
+            "preLaunchTask": "deploy-debugshim-client-python",
+            "connect": {
+                "host": "localhost",
+                "port": 5678,
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "${workspaceFolder}"
+                }
+            ],
+            "justMyCode": true,
+            "postDebugTask": "reset-debugshim-client",
+            "presentation": {
+                "hidden": false,
+                "group": "",
+                "order": 1
+            }
+        },
+        {
             "name": "Integration Tests - Debug (DotNet)",
             "type": "coreclr",
             "request": "launch",
