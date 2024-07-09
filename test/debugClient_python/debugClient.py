@@ -60,7 +60,7 @@ def link_service():
 
     logger.info("Sending file to app...")
     testfile = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sampleData", "astronaut.jpg")
-    link_response = spacefx.link.send_file_to_app("sdk-dotnet", testfile, overwrite_destination_file=True)
+    link_response = spacefx.link.send_file_to_app("spacesdk-client", testfile, overwrite_destination_file=True)
     logger.info(f"Result: {StatusCodes.Name(link_response.responseHeader.status)}")
     logger.info("----LINK SERVICE: END-----")
 
