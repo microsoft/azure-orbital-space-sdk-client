@@ -118,6 +118,29 @@
                 "group": "integrationtests",
                 "order": 2
             },
-        }
+        },
+        {
+            "name": "Integration Tests (python) - Run",
+            "type": "debugpy",
+            "request": "attach",
+            "preLaunchTask": "deploy-debugshim-client-integrationtest-python",
+            "connect": {
+                "host": "localhost",
+                "port": 5678,
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "${workspaceFolder}"
+                }
+            ],
+            "justMyCode": true,
+            "postDebugTask": "reset-debugshim-client",
+            "presentation": {
+                "hidden": false,
+                "group": "integrationtests",
+                "order": 3
+            },
+        },
     ]
 }

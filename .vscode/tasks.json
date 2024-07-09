@@ -31,6 +31,33 @@
             }
         },
         {
+            "label": "deploy-debugshim-client-integrationtest-python",
+            "isBackground": false,
+            "dependsOn": [
+                "build-client"
+            ],
+            "command": "/bin/bash",
+            "type": "shell",
+            "args": [
+                "/spacefx-dev/debugShim-deploy.sh",
+                "--debug_shim",
+                "${DEBUG_SHIM_CLIENT}",
+                "--python_file",
+                "${workspaceFolder}/test/integrationTests_python/integrationTest.py",
+                "--port",
+                "5678",
+                "--disable_plugin_configs"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            }
+        },
+        {
             "label": "deploy-debugshim-client-python",
             "isBackground": false,
             "dependsOn": [
