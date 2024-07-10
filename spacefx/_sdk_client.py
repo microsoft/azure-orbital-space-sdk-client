@@ -1,25 +1,7 @@
 import os
 import pythonnet
-
-
-def find_git_root(starting_directory):
-    """
-    Search for a .git directory by moving up the directory tree from the starting directory.
-    If found, return the path to the directory containing the .git directory.
-    If not found and the root of the directory tree is reached, return None.
-    """
-    current_directory = starting_directory
-    while True:
-        # Check if .git directory exists in the current directory
-        if os.path.isdir(os.path.join(current_directory, ".git")):
-            return os.path.join(current_directory, ".git")
-        # Move up one directory level
-        parent_directory = os.path.dirname(current_directory)
-        if parent_directory == current_directory:
-            # Root of the directory tree is reached without finding .git
-            return None
-        current_directory = parent_directory
-
+import shutil
+from pathlib import Path
 
 def search_file(filename, search_path):
     """Search for a file recursively in a directory tree."""
@@ -30,23 +12,15 @@ def search_file(filename, search_path):
     raise FileNotFoundError(f"{filename} not found in {search_path}")
 
 # Find the dotnet directory
-PROD_DOTNET_DIR = "/usr/share/dotnet/shared"
-DOTNET_DIR=""
-
-# SpaceFX-Dev installed dotnet to the .git directory so it can be used by the
-# debugShim and the devcontainer.  This will locate the .git directory by
-# walking up the tree
-DEV_DOTNET_DIR = find_git_root(os.path.dirname(os.path.abspath(__file__)))
-
-if DEV_DOTNET_DIR:
-    DEV_DOTNET_DIR = os.path.join(DEV_DOTNET_DIR, "spacefx-dev", "dotnet", "shared")
-    DOTNET_DIR = DEV_DOTNET_DIR if os.path.exists(DEV_DOTNET_DIR) else None
-
+DOTNET_DIR = shutil.which("dotnet")
 if not DOTNET_DIR:
-    DOTNET_DIR = PROD_DOTNET_DIR if os.path.exists(PROD_DOTNET_DIR) else None
+    raise ValueError(f"Unable to find an installation of dotnet.  Please install dotnet so it's found within the system PATH")
 
-if not DOTNET_DIR:
-    raise ValueError(f"Was not able to find dotnet directory as '{PROD_DOTNET_DIR}' nor within a '{DEV_DOTNET_DIR}'. Please check that dotnet is installed")
+DOTNET_DIR = Path(DOTNET_DIR).resolve(strict=True).parent
+DOTNET_DIR = os.path.join(DOTNET_DIR, "shared")
+
+if not os.path.exists(DOTNET_DIR):
+    raise ValueError(f"dotnet was found, but unable to find the shared directory '${DOTNET_DIR}'.  Please check your dotnet installation and make sure the shared folder is present")
 
 
 # Recursively search and load the runtimeconfig.json - this allows for dotnet minor version changes
@@ -66,7 +40,7 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(DOTNET_DIR, 'Microsoft.
 
 
 # Load the client adapter library which is in the parent directory / spacefxClient
-base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spacefxClient')
+base_dir = Path(__file__).parent / 'spacefxClient'
 
 # Find "spacesdk-client.dll" in any subdirectory
 spacesdk_client_dll = next(base_dir.rglob('spacesdk-client.dll'), None)
