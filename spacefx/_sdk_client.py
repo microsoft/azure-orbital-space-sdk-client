@@ -16,7 +16,7 @@ DOTNET_DIR = shutil.which("dotnet")
 if not DOTNET_DIR:
     raise ValueError(f"Unable to find an installation of dotnet.  Please install dotnet so it's found within the system PATH")
 
-DOTNET_DIR = DOTNET_DIR.resolve(strict=True).parent
+DOTNET_DIR = Path(DOTNET_DIR).resolve(strict=True).parent
 DOTNET_DIR = os.path.join(DOTNET_DIR, "shared")
 
 if not os.path.exists(DOTNET_DIR):
@@ -40,7 +40,7 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(DOTNET_DIR, 'Microsoft.
 
 
 # Load the client adapter library which is in the parent directory / spacefxClient
-base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'spacefxClient')
+base_dir = Path(__file__).parent / 'spacefxClient'
 
 # Find "spacesdk-client.dll" in any subdirectory
 spacesdk_client_dll = next(base_dir.rglob('spacesdk-client.dll'), None)
