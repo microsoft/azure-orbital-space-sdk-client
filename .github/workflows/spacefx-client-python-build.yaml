@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
     push:
         branches:
-         - main
+         - km/add_dotnet_build
 
 jobs:
   build-spacefx-client-python-amd64:
