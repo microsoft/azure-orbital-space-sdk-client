@@ -1,8 +1,6 @@
 # Azure Orbital Space SDK - Client Libraries
 
-[![platform-mts-build](https://github.com/microsoft/azure-orbital-space-sdk-platform-mts/actions/workflows/platform-mts-build-publish.yaml/badge.svg)](https://github.com/microsoft/azure-orbital-space-sdk-platform-mts/actions/workflows/platform-mts-build-publish.yaml)
-
-[![test-platform-mts](https://github.com/microsoft/azure-orbital-space-sdk-platform-mts/actions/workflows/platform-mts-test.yaml/badge.svg)](https://github.com/microsoft/azure-orbital-space-sdk-platform-mts/actions/workflows/platform-mts-test.yaml)
+[![spacefx-client-build](https://github.com/microsoft/azure-orbital-space-sdk-client/actions/workflows/spacefx-client-build.yaml/badge.svg)](https://github.com/microsoft/azure-orbital-space-sdk-client/actions/workflows/spacefx-client-build.yaml)
 
 This repository hosts the DotNet and Python client libraries used by Payload Apps to interact with the Microsoft Azure Orbital Space SDK
 
