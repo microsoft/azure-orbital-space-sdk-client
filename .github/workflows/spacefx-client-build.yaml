@@ -23,7 +23,7 @@ jobs:
       PYTHON_OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
       PYTHON_WHEEL_STAGING_DIRECTORY: /var/spacedev/wheel/microsoftazurespacefx
       PYTHON_WHEEL_FILE_PREFIX: microsoftazurespacefx
-      PYTHON_BUILD_PYTHON_WHEEL: true
+      BUILD_PYTHON_WHEEL: true
       ANNOTATION: azure-orbital-space-sdk-client.yaml
       WORKFLOW_AGENT: ubuntu-latest
       ARCHITECTURE: amd64
