@@ -108,10 +108,10 @@ function clean_python_dir() {
 function copy_for_python() {
     info_log "START: ${FUNCNAME[0]}"
 
-    info_log "Copying '${DOTNET_DLL_BUILD_DIR}/*' to '${PYTHON_DLL_DIR}/'..."
-    run_a_script "cp -r ${DOTNET_DLL_BUILD_DIR}/* ${PYTHON_DLL_DIR}/"
+    info_log "Copying '${TARGET_DIR}/*' to '${PYTHON_DLL_DIR}/'..."
+    run_a_script "cp -r ${TARGET_DIR}/* ${PYTHON_DLL_DIR}/"
 
-    info_log "...successfully copied '${DOTNET_DLL_BUILD_DIR}/*' to '${PYTHON_DLL_DIR}/'."
+    info_log "...successfully copied '${TARGET_DIR}/*' to '${PYTHON_DLL_DIR}/'."
 
     info_log "END: ${FUNCNAME[0]}"
 }
