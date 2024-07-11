@@ -12,7 +12,7 @@ jobs:
       contents: read
       packages: write
 
-    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/client-build.yml@km/add_build_steps
+    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/client-build.yaml@km/add_build_steps
     with:
       DOTNET_APP_PROJECT: ./src/spacesdk-client.csproj
       DOTNET_NUGET_PROJECT: ./src/spacesdk-client.csproj
@@ -37,7 +37,7 @@ jobs:
 #       contents: read
 #       packages: write
 
-#     uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/client-build.yml@km/add_build_steps
+#     uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/client-build.yaml@km/add_build_steps
 #     with:
 #       DOTNET_APP_PROJECT: ./src/spacesdk-client.csproj
 #       DOTNET_NUGET_PROJECT: ./src/spacesdk-client.csproj
