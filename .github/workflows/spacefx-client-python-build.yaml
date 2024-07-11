@@ -22,7 +22,7 @@ jobs:
       WORKFLOW_AGENT: ubuntu-latest
       ARCHITECTURE: amd64
       BUILD_PYTHON_WHEEL: true
-      DOT_NET_PROJECT: ./src/spacesdk-client.csproj
+      DOT_NET_PROJECT: /workspace/spacesdk-client/src/spacesdk-client.csproj
       CONTAINER_NAME: spacesdk-client
     secrets:
       GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
