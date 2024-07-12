@@ -83,6 +83,8 @@ public class Link {
             Logger.LogDebug("File '{file}' is in a subdirectory within outbox directory '{outbox}' of '{subdir}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", file, outbox_directory, linkRequest.Subdirectory, linkRequest.RequestHeader.TrackingId, linkRequest.RequestHeader.CorrelationId);
         }
 
+        linkRequest.FileName = System.IO.Path.GetFileName(file);
+
 
         Logger.LogDebug("Waiting for service '{service_app_id}' to come online", TARGET_SERVICE_APP_ID);
         // Wait for the service to come online
@@ -101,8 +103,10 @@ public class Link {
             if (eventHandlerResponse.ResponseHeader.TrackingId == linkRequest.RequestHeader.TrackingId) {
                 Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
 
-                response = eventHandlerResponse;
-                Client.LinkResponseEvent -= LinkResponseEventHandler; // Remove myself for next time
+                if (eventHandlerResponse.ResponseHeader.Status != MessageFormats.Common.StatusCodes.Pending) {
+                    response = eventHandlerResponse;
+                    Client.LinkResponseEvent -= LinkResponseEventHandler; // Remove myself for next time
+                }
             }
         }
 
