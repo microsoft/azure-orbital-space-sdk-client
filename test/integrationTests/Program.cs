@@ -4,6 +4,7 @@ public class Program {
     internal static TestSharedContext TEST_SHARED_CONTEXT = new();
     public static void Main(string[] args) {
         Console.WriteLine("--------- Starting Tests ---------");
+        RunTests<Tests.PositionTests>();
         RunTests<Tests.LinkTests>();
         RunTests<Tests.ServicesHeardTests>();
         RunTests<Tests.LogMessageTests>();
