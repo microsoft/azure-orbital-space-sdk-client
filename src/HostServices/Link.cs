@@ -76,12 +76,19 @@ public class Link {
 
         if (!file.StartsWith(outbox_directory)) {
             Logger.LogDebug("Moving '{file}' to outbox directory '{outbox}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", file, outbox_directory, linkRequest.RequestHeader.TrackingId, linkRequest.RequestHeader.CorrelationId);
-            File.Copy(file, Path.Combine(outbox_directory, System.IO.Path.GetFileName(file)), overwrite: true);
+            if (string.IsNullOrWhiteSpace(linkRequest.Subdirectory)) {
+                File.Copy(file, Path.Combine(outbox_directory, System.IO.Path.GetFileName(file)), overwrite: true);
+            } else {
+                Directory.CreateDirectory(Path.Combine(outbox_directory, linkRequest.Subdirectory));
+                File.Copy(file, Path.Combine(outbox_directory, linkRequest.Subdirectory, System.IO.Path.GetFileName(file)), overwrite: true);
+            }
         } else {
             linkRequest.Subdirectory = System.IO.Path.GetDirectoryName(file) ?? "";
             linkRequest.Subdirectory = linkRequest.Subdirectory.Replace(outbox_directory, ""); // Calculate the subdirectory name by removing the outbox directory name
             Logger.LogDebug("File '{file}' is in a subdirectory within outbox directory '{outbox}' of '{subdir}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", file, outbox_directory, linkRequest.Subdirectory, linkRequest.RequestHeader.TrackingId, linkRequest.RequestHeader.CorrelationId);
         }
+
+        linkRequest.FileName = System.IO.Path.GetFileName(file);
 
 
         Logger.LogDebug("Waiting for service '{service_app_id}' to come online", TARGET_SERVICE_APP_ID);
@@ -101,8 +108,10 @@ public class Link {
             if (eventHandlerResponse.ResponseHeader.TrackingId == linkRequest.RequestHeader.TrackingId) {
                 Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
 
-                response = eventHandlerResponse;
-                Client.LinkResponseEvent -= LinkResponseEventHandler; // Remove myself for next time
+                if (eventHandlerResponse.ResponseHeader.Status != MessageFormats.Common.StatusCodes.Pending) {
+                    response = eventHandlerResponse;
+                    Client.LinkResponseEvent -= LinkResponseEventHandler; // Remove myself for next time
+                }
             }
         }
 

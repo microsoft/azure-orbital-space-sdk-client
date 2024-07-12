@@ -1,0 +1,58 @@
+name: spacefx-client-build
+
+on: 
+    workflow_dispatch:
+    push:
+        branches:
+         - main
+
+jobs:
+  build-spacefx-client-amd64:
+    permissions:
+      contents: read
+      packages: write
+
+    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/client-build.yaml@main
+    with:
+      DOTNET_APP_PROJECT: ./src/spacesdk-client.csproj
+      DOTNET_NUGET_PROJECT: ./src/spacesdk-client.csproj
+      DOTNET_OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
+      DOTNET_NUGET_STAGING_DIRECTORY: /var/spacedev/nuget/spacesdk-client
+      DOTNET_NUGET_FILE_PREFIX: Microsoft.Azure.SpaceSDK.Client
+      PYTHON_APP_PROJECT:  spacefx
+      PYTHON_OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
+      PYTHON_WHEEL_STAGING_DIRECTORY: /var/spacedev/wheel/microsoftazurespacefx
+      PYTHON_WHEEL_FILE_PREFIX: microsoftazurespacefx
+      BUILD_PYTHON_WHEEL: true
+      ANNOTATION: azure-orbital-space-sdk-client.yaml
+      WORKFLOW_AGENT: ubuntu-latest
+      ARCHITECTURE: amd64
+    secrets:
+      GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
+      GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
+      SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
+
+  build-spacefx-client-dotnet-arm64:
+    permissions:
+      contents: read
+      packages: write
+
+    uses: microsoft/azure-orbital-space-sdk-github-actions/.github/workflows/client-build.yaml@main
+    with:
+      DOTNET_APP_PROJECT: ./src/spacesdk-client.csproj
+      DOTNET_NUGET_PROJECT: ./src/spacesdk-client.csproj
+      DOTNET_OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
+      DOTNET_NUGET_STAGING_DIRECTORY: /var/spacedev/nuget/spacesdk-client
+      DOTNET_NUGET_FILE_PREFIX: Microsoft.Azure.SpaceSDK.Client
+      PYTHON_APP_PROJECT:  spacefx
+      PYTHON_OUTPUT_DIR: /var/spacedev/tmp/spacesdk-client
+      PYTHON_WHEEL_STAGING_DIRECTORY: /var/spacedev/wheel/microsoftazurespacefx
+      PYTHON_WHEEL_FILE_PREFIX: microsoftazurespacefx
+      BUILD_PYTHON_WHEEL: true
+      ANNOTATION: azure-orbital-space-sdk-client.yaml
+      WORKFLOW_AGENT: spacesdk-ubuntu-2204LTS-arm64
+      ARCHITECTURE: arm64
+    secrets:
+      GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
+      GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
+      SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}

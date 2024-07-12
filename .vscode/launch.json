@@ -34,6 +34,29 @@
             "requireExactSource": true
         },
         {
+            "name": "DebugClient (Python)",
+            "type": "debugpy",
+            "request": "attach",
+            "preLaunchTask": "deploy-debugshim-client-python",
+            "connect": {
+                "host": "localhost",
+                "port": 5678,
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "${workspaceFolder}"
+                }
+            ],
+            "justMyCode": true,
+            "postDebugTask": "reset-debugshim-client",
+            "presentation": {
+                "hidden": false,
+                "group": "",
+                "order": 1
+            }
+        },
+        {
             "name": "Integration Tests - Debug (DotNet)",
             "type": "coreclr",
             "request": "launch",
@@ -57,7 +80,7 @@
                 "quoteArgs": false,
                 "debuggerPath": "${workspaceFolder}/.git/spacefx-dev/vsdbg/vsdbg"
             },
-            "postDebugTask": "reset-debugshim-test-client",
+            "postDebugTask": "reset-debugshim-client",
             "presentation": {
                 "hidden": false,
                 "group": "integrationtests",
@@ -69,7 +92,7 @@
             "name": "Integration Tests - Run (DotNet)",
             "type": "coreclr",
             "request": "launch",
-            "program": "/usr/bin/dotnet",
+            "program": "${workspaceFolder}/.git/spacefx-dev/dotnet/dotnet",
             "preLaunchTask": "deploy-debugshim-integrationTest",
             "args": [
                 "test",
@@ -89,12 +112,35 @@
                 "quoteArgs": false,
                 "debuggerPath": "${workspaceFolder}/.git/spacefx-dev/vsdbg/vsdbg"
             },
-            "postDebugTask": "reset-debugshim-test-client",
+            "postDebugTask": "reset-debugshim-client",
             "presentation": {
-                "hidden": true,
+                "hidden": false,
                 "group": "integrationtests",
                 "order": 2
             },
-        }
+        },
+        {
+            "name": "Integration Tests - Run (Python)",
+            "type": "debugpy",
+            "request": "attach",
+            "preLaunchTask": "deploy-debugshim-client-integrationtest-python",
+            "connect": {
+                "host": "localhost",
+                "port": 5678,
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "${workspaceFolder}"
+                }
+            ],
+            "justMyCode": true,
+            "postDebugTask": "reset-debugshim-client",
+            "presentation": {
+                "hidden": false,
+                "group": "integrationtests",
+                "order": 3
+            },
+        },
     ]
 }
