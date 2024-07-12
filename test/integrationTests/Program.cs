@@ -4,8 +4,10 @@ public class Program {
     internal static TestSharedContext TEST_SHARED_CONTEXT = new();
     public static void Main(string[] args) {
         Console.WriteLine("--------- Starting Tests ---------");
+        RunTests<Tests.ServicesHeardTests>();
         RunTests<Tests.LogMessageTests>();
         RunTests<Tests.ProtoTests>();
+
 
         Console.WriteLine("--------- All Tests successful ---------");
     }

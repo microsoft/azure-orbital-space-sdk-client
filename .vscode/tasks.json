@@ -7,6 +7,35 @@
     },
     "tasks": [
         {
+            "label": "deploy-debugshim-integrationTest",
+            "isBackground": false,
+            "command": "/bin/bash",
+            "type": "shell",
+            "dependsOn": [
+                "build-integrationTest"
+            ],
+            "dependsOrder": "sequence",
+            "args": [
+                "/spacefx-dev/debugShim-deploy.sh",
+                "--debug_shim",
+                "${DEBUG_SHIM_CLIENT}",
+                "--disable_plugin_configs",
+                "--python_file",
+                "${workspaceFolder}/test/integrationTests_python/integrationTest.py",
+                "--port",
+                "5678",
+                "--disable_plugin_configs"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            }
+        },
+        {
             "label": "deploy-debugshim-client",
             "isBackground": false,
             "command": "/bin/bash",
@@ -19,6 +48,11 @@
                 "/spacefx-dev/debugShim-deploy.sh",
                 "--debug_shim",
                 "${DEBUG_SHIM_CLIENT}",
+                "--disable_plugin_configs",
+                "--python_file",
+                "${workspaceFolder}/test/integrationTests_python/integrationTest.py",
+                "--port",
+                "5678",
                 "--disable_plugin_configs"
             ],
             "presentation": {
@@ -112,6 +146,18 @@
             "args": [
                 "build",
                 "${workspaceFolder}/test/debugClient/debugClient.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-integrationTest",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/test/integrationTests/integrationTests.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
