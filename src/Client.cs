@@ -3,10 +3,17 @@
 namespace Microsoft.Azure.SpaceFx.SDK;
 public class Client {
     private static Client _client { get; set; } = null!;
+    internal static CancellationTokenSource _globalCancellationTokenSource { get; set; } = new CancellationTokenSource();
     internal static WebApplication _grpcHost { get; set; } = null!;
     private static bool IS_ONLINE {
         get {
             return !string.IsNullOrWhiteSpace(APP_ID);
+        }
+    }
+    public static Core.APP_CONFIG APP_CONFIG {
+        get {
+            if (_grpcHost is null) throw new Exception("Client is not provisioned.  Please deploy the client before trying to run this");
+            return new Core.APP_CONFIG();
         }
     }
     internal static TimeSpan DefaultMessageResponseTimeout;
@@ -49,16 +56,18 @@ public class Client {
         _client = new Client();
     }
 
-    public static Task KeepAppOpen() {
-        while (true) {
-            Task.Delay(5000).Wait();
+    public static async Task KeepAppOpen() {
+        while (!_globalCancellationTokenSource.IsCancellationRequested) {
+            await Task.Delay(2000, _globalCancellationTokenSource.Token);
         }
     }
+
 
     /// <summary>
     /// Stops the SDK Client and disposes of all resources
     /// </summary>
     public static void Shutdown() {
+        _globalCancellationTokenSource.Cancel();
         if (_client is null || _grpcHost is null) throw new Exception("Client is not provisioned.  Please deploy the client before trying to run this");
         _grpcHost.StopAsync().Wait();
     }
@@ -132,6 +141,10 @@ public class Client {
             logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
         });
 
+        _globalCancellationTokenSource.Token.Register(() => {
+            Console.WriteLine("Cancellation requested.");
+        });
+
         _grpcHost = builder.Build();
 
         _grpcHost.UseRouting();
@@ -140,6 +153,18 @@ public class Client {
             endpoints.MapGet("/", async context => {
                 await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
             });
+        });
+
+        _grpcHost.Use(async (context, next) => {
+            try {
+                await next.Invoke();
+            } catch (Exception ex) {
+                Console.WriteLine($"Exception caught in middleware: {ex.Message}");
+
+                // Stop the host gracefully
+                var lifetime = context.RequestServices.GetService<IHostApplicationLifetime>();
+                lifetime?.StopApplication();
+            }
         });
 
         Logger.LogDebug("Starting Microsoft Azure Orbital Client");

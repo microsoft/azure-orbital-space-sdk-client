@@ -80,7 +80,7 @@
                 "quoteArgs": false,
                 "debuggerPath": "${workspaceFolder}/.git/spacefx-dev/vsdbg/vsdbg"
             },
-            "postDebugTask": "reset-debugshim-test-client",
+            "postDebugTask": "reset-debugshim-client",
             "presentation": {
                 "hidden": false,
                 "group": "integrationtests",
@@ -92,7 +92,7 @@
             "name": "Integration Tests - Run (DotNet)",
             "type": "coreclr",
             "request": "launch",
-            "program": "/usr/bin/dotnet",
+            "program": "${workspaceFolder}/.git/spacefx-dev/dotnet/dotnet",
             "preLaunchTask": "deploy-debugshim-integrationTest",
             "args": [
                 "test",
@@ -112,15 +112,15 @@
                 "quoteArgs": false,
                 "debuggerPath": "${workspaceFolder}/.git/spacefx-dev/vsdbg/vsdbg"
             },
-            "postDebugTask": "reset-debugshim-test-client",
+            "postDebugTask": "reset-debugshim-client",
             "presentation": {
-                "hidden": true,
+                "hidden": false,
                 "group": "integrationtests",
                 "order": 2
             },
         },
         {
-            "name": "Integration Tests (python) - Run",
+            "name": "Integration Tests - Run (Python)",
             "type": "debugpy",
             "request": "attach",
             "preLaunchTask": "deploy-debugshim-client-integrationtest-python",
