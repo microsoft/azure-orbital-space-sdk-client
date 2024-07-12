@@ -76,7 +76,12 @@ public class Link {
 
         if (!file.StartsWith(outbox_directory)) {
             Logger.LogDebug("Moving '{file}' to outbox directory '{outbox}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", file, outbox_directory, linkRequest.RequestHeader.TrackingId, linkRequest.RequestHeader.CorrelationId);
-            File.Copy(file, Path.Combine(outbox_directory, System.IO.Path.GetFileName(file)), overwrite: true);
+            if (string.IsNullOrWhiteSpace(linkRequest.Subdirectory)) {
+                File.Copy(file, Path.Combine(outbox_directory, System.IO.Path.GetFileName(file)), overwrite: true);
+            } else {
+                Directory.CreateDirectory(Path.Combine(outbox_directory, linkRequest.Subdirectory));
+                File.Copy(file, Path.Combine(outbox_directory, linkRequest.Subdirectory, System.IO.Path.GetFileName(file)), overwrite: true);
+            }
         } else {
             linkRequest.Subdirectory = System.IO.Path.GetDirectoryName(file) ?? "";
             linkRequest.Subdirectory = linkRequest.Subdirectory.Replace(outbox_directory, ""); // Calculate the subdirectory name by removing the outbox directory name
