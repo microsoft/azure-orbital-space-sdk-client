@@ -36,6 +36,9 @@ jobs:
         GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
         SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
 
+    - uses: microsoft/azure-orbital-space-sdk-github-actions/composite-actions/install-publish-dependencies@main
+      if: inputs.WORKFLOW_AGENT == 'spacesdk-ubuntu-2204LTS-arm64'
+
     ## Build the Service's Devcontainer and wait for pods to spin up (unnecessary when devcontainer up composite action is available)
     - name: Build Devcontainer
       shell: bash
@@ -102,8 +105,8 @@ jobs:
         sleep 5
 
         echo "Starting the integration test"
-        echo "Running: docker exec ${DEV_CONTAINER_NAME} bash -c \"/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTests.py --disable_plugin_configs --port 5678\""
-        docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTests.py --disable_plugin_configs --port 5678" &
+        echo "Running: docker exec ${DEV_CONTAINER_NAME} bash -c \"/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678\""
+        docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678" &
 
         echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"/workspace/${{ inputs.app_name }}/.git/spacefx-dev/dotnet/dotnet test --verbosity detailed /workspace/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspace/${{ inputs.app_name }}/.git/test-results.xml\"\" &"
         (
