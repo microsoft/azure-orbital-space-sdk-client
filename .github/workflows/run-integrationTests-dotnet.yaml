@@ -77,12 +77,12 @@ jobs:
         echo "Container Name: $DEV_CONTAINER_NAME"
 
         # Build the app
-        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspaces/${{ inputs.app_name }}/src\""
-        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspaces/${{ inputs.app_name }}/src"
+        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspaces/${{ inputs.app_name }}/src/spacesdk-client.csproj\""
+        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspaces/${{ inputs.app_name }}/src/spacesdk-client.csproj"
 
         # Build integrationTests
         echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspaces/${{ inputs.app_name }}/test/integrationTests\""
-        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspaces/${{ inputs.app_name }}/test/integrationTests"
+        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspaces/${{ inputs.app_name }}/test/integrationTest/integrationTests.csproj"
         echo $?
 
     - name: Run Integration Tests
