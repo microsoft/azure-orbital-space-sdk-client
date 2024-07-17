@@ -148,6 +148,8 @@ jobs:
             exit 1
         fi
 
+        echo "Test results found."
+
         # moving test-results.xml to the root of the workspace
         mv .git/test-results.xml ${PWD}
 
