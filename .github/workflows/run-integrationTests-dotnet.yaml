@@ -135,17 +135,14 @@ jobs:
         echo "--------------------"
         echo ""
 
-        echo "Outputting contents of .git directory"
-        tree ${PWD}/.git
-
         if [[ ! -f "${PWD}/.git/test-results.xml" ]]; then
           echo "Test results file not found."
           exit 1
         fi
 
         if [[ $client_pid_return_code -gt 0 ]]; then
-            echo "Integration tests failed.  Exiting with code 1."
-            exit 1
+          echo "Integration tests failed.  Exiting with code 1."
+          exit 1
         fi
 
         echo "Test results found."
