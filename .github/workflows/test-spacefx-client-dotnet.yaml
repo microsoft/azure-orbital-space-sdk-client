@@ -1,4 +1,4 @@
-name: test-spacefx-client
+name: test-spacefx-client-dotnet
 on: 
     workflow_dispatch:
     push:
@@ -6,7 +6,7 @@ on:
       branches: [ main ]
 
 jobs:
-  test-spacefx-client-amd64:
+  test-spacefx-client-dotnet-amd64:
     permissions:
       contents: read
       issues: read
@@ -21,7 +21,9 @@ jobs:
       GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
       SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
 
-  test-spacefx-client-arm64:
+  
+
+  test-spacefx-client-dotnet-arm64:
     permissions:
       contents: read
       issues: read
