@@ -20,8 +20,6 @@ jobs:
       GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
       SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
 
-  
-
   test-spacefx-client-dotnet-arm64:
     permissions:
       contents: read
