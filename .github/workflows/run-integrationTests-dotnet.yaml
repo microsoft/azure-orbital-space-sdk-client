@@ -77,12 +77,12 @@ jobs:
         echo "Container Name: $DEV_CONTAINER_NAME"
 
         # Build the app
-        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspaces/${{ inputs.app_name }}/src/spacesdk-client.csproj\""
-        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspaces/${{ inputs.app_name }}/src/spacesdk-client.csproj"
+        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspace/${{ inputs.app_name }}/src/spacesdk-client.csproj\""
+        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspace/${{ inputs.app_name }}/src/spacesdk-client.csproj"
 
         # Build integrationTests
-        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspaces/${{ inputs.app_name }}/test/integrationTests\""
-        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspaces/${{ inputs.app_name }}/test/integrationTest/integrationTests.csproj"
+        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspace/${{ inputs.app_name }}/test/integrationTests\""
+        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspace/${{ inputs.app_name }}/test/integrationTest/integrationTests.csproj"
         echo $?
 
     - name: Run Integration Tests
@@ -105,7 +105,7 @@ jobs:
         echo "Running: docker exec ${DEV_CONTAINER_NAME} bash -c \"/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --port 5678 \""
         docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --port 5678"
 
-        echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"/usr/bin/dotnet test --verbosity detailed /workspaces/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspaces/${{ inputs.app_name }}/.git/test-results.xml\"\" &"
+        echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"/usr/bin/dotnet test --verbosity detailed /workspace/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspace/${{ inputs.app_name }}/.git/test-results.xml\"\" &"
         (
             # Reroute the stdout to a file so we can uniquely identify this run
             trap "" HUP
@@ -113,7 +113,7 @@ jobs:
             exec 1> "${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout"
             exec 2>&1
 
-            k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c "/usr/bin/dotnet test --verbosity detailed /workspaces/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspaces/${{ inputs.app_name }}/.git/test-results.xml\""
+            k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c "/usr/bin/dotnet test --verbosity detailed /workspace/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspace/${{ inputs.app_name }}/.git/test-results.xml\""
         ) &
 
         client_pid=$!
