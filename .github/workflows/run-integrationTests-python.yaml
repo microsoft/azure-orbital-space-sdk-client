@@ -131,6 +131,6 @@ jobs:
         cat ${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout | grep INFO
         echo ""
 
-        return $client_pid_return_code
+        exit $client_pid_return_code
         echo "--------------------"
        
