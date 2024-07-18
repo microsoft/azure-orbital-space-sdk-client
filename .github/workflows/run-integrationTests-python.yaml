@@ -81,10 +81,6 @@ jobs:
         echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspace/${{ inputs.app_name }}/src/spacesdk-client.csproj\""
         docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspace/${{ inputs.app_name }}/src/spacesdk-client.csproj"
 
-        # Build integrationTests
-        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspace/${{ inputs.app_name }}/test/integrationTests/integrationTests.csproj\""
-        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspace/${{ inputs.app_name }}/test/integrationTests/integrationTests.csproj"
-
         # Build debugClient
         echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspace/${{ inputs.app_name }}/test/debugClient/debugClient.csproj\""
         docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspace/${{ inputs.app_name }}/test/debugClient/debugClient.csproj"

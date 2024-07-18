@@ -98,8 +98,6 @@ def position_service():
 
 def main():
 
-    
-
     print("Building SpaceFX Client")
     spacefx.client.build()
 
