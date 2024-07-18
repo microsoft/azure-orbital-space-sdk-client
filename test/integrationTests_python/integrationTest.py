@@ -119,9 +119,6 @@ def main():
     link_service()
     logging_service()
 
-    logger.info("Debugging complete! Keeping application open...")
-    spacefx.client.keep_app_open()
-
 
 if __name__ == '__main__':
     main()

@@ -1,0 +1,37 @@
+name: test-spacesdk-client-dotnet
+on: 
+    workflow_dispatch:
+    push:
+    pull_request:
+      branches: [ main ]
+
+jobs:
+  test-spacesdk-client-python-amd64:
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+
+    uses: ./.github/workflows/run-integrationTests-python.yaml
+    with:
+      WORKFLOW_AGENT: ubuntu-latest
+    secrets:
+      GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
+      GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
+      SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
+
+  test-spacesdk-client-python-arm64:
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+
+    uses: ./.github/workflows/run-integrationTests-python.yaml
+    with:
+      WORKFLOW_AGENT: spacesdk-ubuntu-2204LTS-arm64
+    secrets:
+      GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
+      GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
+      SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
