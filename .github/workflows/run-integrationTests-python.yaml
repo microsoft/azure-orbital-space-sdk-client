@@ -108,14 +108,14 @@ jobs:
 
         echo "Running: docker exec ${DEV_CONTAINER_NAME} bash -c \"/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678\""
         docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678" &
-        echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"python3 /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py\" &"
+        echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"cd /workspace/${{ inputs.app_name }}/test/integrationTests_python && /python3 /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py\" &"
         (
             # Reroute the stdout to a file so we can uniquely identify this run
             trap "" HUP
             exec 0< /dev/null
             exec 1> "${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout"
             exec 2>&1
-            k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c "python3 /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py"
+            k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c "cd /workspace/${{ inputs.app_name }}/test/integrationTests_python && python3 /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py"
         ) &
 
         client_pid=$!
