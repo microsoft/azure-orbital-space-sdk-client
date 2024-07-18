@@ -84,6 +84,8 @@ jobs:
         # Build integrationTests
         echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspace/${{ inputs.app_name }}/test/integrationTests/integrationTests.csproj\""
         docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspace/${{ inputs.app_name }}/test/integrationTests/integrationTests.csproj"
+
+        docker exec ${DEV_CONTAINER_NAME} bash -c "cp /workspace/${{ inputs.app_name }}/test/integrationTests/appsettings.json /workspace/${{ inputs.app_name }}/spacefx/spacefxClient/appsettings.json"
         echo $?
 
     - name: Deploy DebugShim
