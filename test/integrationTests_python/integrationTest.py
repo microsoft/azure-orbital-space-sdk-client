@@ -97,8 +97,12 @@ def position_service():
 
 
 def main():
+
     print("Building SpaceFX Client")
     spacefx.client.build()
+
+    logger.info("[BEGIN] Integration Tests")
+    logger.info("---------------------------")
 
     appid = spacefx.client.get_app_id()
     logger.info(f"AppID: {appid}")
@@ -118,6 +122,8 @@ def main():
     sensor_service()
     link_service()
     logging_service()
+    logger.info("---------------------------")
+    logger.info("[END] Integration Tests")
 
 
 if __name__ == '__main__':

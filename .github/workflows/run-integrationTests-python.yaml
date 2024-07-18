@@ -1,0 +1,136 @@
+name: test-template-spacefx-client-python
+on:
+    workflow_call:
+      inputs:
+        WORKFLOW_AGENT:
+          description: 'The agent to run the job on'
+          required: true
+          type: string
+        app_name:
+          description: 'The name of the app to test'
+          default: spacesdk-client
+          type: string
+      secrets:
+        GIT_HUB_USER_NAME:
+            required: true
+        GIT_HUB_USER_TOKEN:
+            required: true
+        SETUP_REPO_URL:
+            required: true
+
+
+jobs:
+  build-and-test:
+    name: test-spacefx-client-python-${{ inputs.WORKFLOW_AGENT }}
+    runs-on: ${{ inputs.WORKFLOW_AGENT }}
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+
+    steps:
+    - uses: microsoft/azure-orbital-space-sdk-github-actions/composite-actions/initialize@main
+      with:
+        GIT_HUB_USER_NAME: ${{ secrets.GIT_HUB_USER_NAME }}
+        GIT_HUB_USER_TOKEN: ${{ secrets.GIT_HUB_USER_TOKEN }}
+        SETUP_REPO_URL: ${{ secrets.SETUP_REPO_URL }}
+
+    ## Build the Service's Devcontainer and wait for pods to spin up (unnecessary when devcontainer up composite action is available)
+    - name: Build Devcontainer
+      shell: bash
+      run: |
+        devcontainer up --workspace-folder ${PWD} \
+            --workspace-mount-consistency cached \
+            --id-label devcontainer.local_folder=${PWD} \
+            --default-user-env-probe loginInteractiveShell \
+            --build-no-cache \
+            --remove-existing-container \
+            --mount type=volume,source=vscode,target=/vscode,external=true \
+            --update-remote-user-uid-default on \
+            --mount-workspace-git-root true
+        echo $?
+
+        pod_status=$(k3s kubectl get pods -n payload-app -l app=${{ inputs.app_name }} --output=json | jq -r '.items[0].status.phase')
+
+        while [[ -z "$pod_status" || "$pod_status" != "Running" ]]; do
+            echo "Checking pod statuses..."
+            pod_status=$(k3s kubectl get pods -n payload-app -l app=${{ inputs.app_name }} --output=json | jq -r '.items[0].status.phase')
+
+            if [[ -z "$pod_status" || "$pod_status" != "Running" ]]; then
+                echo "One or both pods are not 'Running'. POD: '$pod_status' ..."
+                k3s kubectl get pods -A
+                sleep 5 # Wait for 5 seconds before checking again
+            fi
+        done
+
+    - name: Build Projects
+      shell: bash
+      run: |
+        [[ ! -f /var/spacedev/tmp/${{ inputs.app_name }}/container_info.json ]] && echo "container_info.json not found.  Dev container start up failed" && exit 1
+        echo "Calculating container name from container_info.json..."
+
+        DEV_CONTAINER_NAME=$(jq -r </var/spacedev/tmp/${{ inputs.app_name }}/container_info.json '.[0].Name')
+
+        # Remove the first character if it is a slash
+        [[ ${DEV_CONTAINER_NAME:0:1} == "/" ]] && DEV_CONTAINER_NAME="${DEV_CONTAINER_NAME:1}"
+
+        echo "Container Name: $DEV_CONTAINER_NAME"
+
+        # Build the app
+        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspace/${{ inputs.app_name }}/src/spacesdk-client.csproj\""
+        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspace/${{ inputs.app_name }}/src/spacesdk-client.csproj"
+
+        # Build integrationTests
+        echo "Running:  docker exec ${DEV_CONTAINER_NAME} bash -c \"dotnet build /workspace/${{ inputs.app_name }}/test/integrationTests/integrationTests.csproj\""
+        docker exec ${DEV_CONTAINER_NAME} bash -c "dotnet build /workspace/${{ inputs.app_name }}/test/integrationTests/integrationTests.csproj"
+
+        docker exec ${DEV_CONTAINER_NAME} bash -c "cp /workspace/${{ inputs.app_name }}/test/integrationTests/appsettings.json /workspace/${{ inputs.app_name }}/spacefx/spacefxClient/appsettings.json"
+        docker exec ${DEV_CONTAINER_NAME} bash -c "ls /workspace/${{ inputs.app_name }}/spacefx/spacefxClient"
+
+    - name: Deploy DebugShim
+      shell: bash
+      run: |
+        [[ ! -f /var/spacedev/tmp/${{ inputs.app_name }}/container_info.json ]] && echo "container_info.json not found.  Dev container start up failed" && exit 1
+        echo "Calculating container name from container_info.json..."
+
+        DEV_CONTAINER_NAME=$(jq -r </var/spacedev/tmp/${{ inputs.app_name }}/container_info.json '.[0].Name')
+
+        # Remove the first character if it is a slash
+        [[ ${DEV_CONTAINER_NAME:0:1} == "/" ]] && DEV_CONTAINER_NAME="${DEV_CONTAINER_NAME:1}"
+
+        echo "Container Name: $DEV_CONTAINER_NAME"
+
+        echo "Waiting for the integration test to start..."
+        sleep 5
+
+        echo "Starting the integration test"
+
+        echo "Running: docker exec ${DEV_CONTAINER_NAME} bash -c \"/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678\""
+        docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678" &
+        echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"cd /workspace/${{ inputs.app_name }}/test/integrationTests_python && /python3 /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py\" &"
+        (
+            # Reroute the stdout to a file so we can uniquely identify this run
+            trap "" HUP
+            exec 0< /dev/null
+            exec 1> "${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout"
+            exec 2>&1
+            k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c "cd /workspace/${{ inputs.app_name }}/test/integrationTests_python && python3 /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py"
+        ) &
+
+        client_pid=$!
+        
+        echo "Waiting for the integration test host to finish..."
+        client_pid_return_code=0
+        wait "$client_pid"
+        client_pid_return_code=$?
+
+        echo "Client process complete with return code: $client_pid_return_code"
+
+        echo "Outputting logs from the integration test client..."
+        cat ${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout | grep INFO
+        echo ""
+
+        exit $client_pid_return_code
+        echo "--------------------"
+       
