@@ -1,4 +1,4 @@
-name: test-spacefx-client-dotnet
+name: test-spacefx-client-python
 on: 
     workflow_dispatch:
     push:
