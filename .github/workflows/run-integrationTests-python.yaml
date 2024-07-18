@@ -128,7 +128,7 @@ jobs:
         echo "Client process complete with return code: $client_pid_return_code"
 
         echo "Outputting logs from the integration test client..."
-        cat ${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout
+        cat ${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout | grep INFO
         echo ""
 
         return $client_pid_return_code
