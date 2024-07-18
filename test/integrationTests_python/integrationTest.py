@@ -98,11 +98,13 @@ def position_service():
 
 def main():
 
-    logger.info("[BEGIN] Integration Tests")
-    logger.info("---------------------------")
+    
 
     print("Building SpaceFX Client")
     spacefx.client.build()
+
+    logger.info("[BEGIN] Integration Tests")
+    logger.info("---------------------------")
 
     appid = spacefx.client.get_app_id()
     logger.info(f"AppID: {appid}")

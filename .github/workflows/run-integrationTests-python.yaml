@@ -106,11 +106,6 @@ jobs:
 
         echo "Running: docker exec ${DEV_CONTAINER_NAME} bash -c \"/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678\""
         docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678" &
-        
-    - name: Run Integration Tests
-      shell: bash
-      run: |
-        echo "Executing integration tests..."
         echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"python3 /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py\" &"
         (
             # Reroute the stdout to a file so we can uniquely identify this run
