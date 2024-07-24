@@ -48,7 +48,7 @@ public class Position {
         // Create an in-line callback function to get the response for this message
         void PositionResponseEventHandler(object? _, MessageFormats.HostServices.Position.PositionResponse eventHandlerResponse) {
             if (eventHandlerResponse.ResponseHeader.TrackingId == positionRequest.RequestHeader.TrackingId) {
-                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
+                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId, eventHandlerResponse.ResponseHeader.Status);
 
                 response = eventHandlerResponse;
                 Client.PositionResponseEvent -= PositionResponseEventHandler; // Remove myself for next time
@@ -79,7 +79,7 @@ public class Position {
             throw new TimeoutException($"Timed out waiting for a response from {TARGET_SERVICE_APP_ID}");
         }
 
-        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}')", nameof(PositionResponse), response.ResponseHeader.Status, positionRequest.RequestHeader.TrackingId, positionRequest.RequestHeader.CorrelationId);
+        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", nameof(PositionResponse), response.ResponseHeader.Status, positionRequest.RequestHeader.TrackingId, positionRequest.RequestHeader.CorrelationId, response.ResponseHeader.Status);
 
         return response;
     });
