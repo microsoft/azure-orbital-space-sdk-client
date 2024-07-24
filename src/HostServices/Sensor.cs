@@ -50,7 +50,7 @@ public class Sensor {
 
         void SensorsAvailableResponseEventHandler(object? _, MessageFormats.HostServices.Sensor.SensorsAvailableResponse eventHandlerResponse) {
             if (eventHandlerResponse.ResponseHeader.TrackingId == sensorsAvailableRequest.RequestHeader.TrackingId) {
-                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
+                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId, eventHandlerResponse.ResponseHeader.Status);
                 response = eventHandlerResponse;
                 Client.SensorsAvailableResponseEvent -= SensorsAvailableResponseEventHandler;
             }
@@ -79,7 +79,7 @@ public class Sensor {
             throw new TimeoutException($"Timed out waiting for a response from {TARGET_SERVICE_APP_ID}");
         }
 
-        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}')", nameof(SensorsAvailableResponse), response.ResponseHeader.Status, sensorsAvailableRequest.RequestHeader.TrackingId, sensorsAvailableRequest.RequestHeader.CorrelationId);
+        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", nameof(SensorsAvailableResponse), response.ResponseHeader.Status, sensorsAvailableRequest.RequestHeader.TrackingId, sensorsAvailableRequest.RequestHeader.CorrelationId, response.ResponseHeader.Status);
 
         return response;
     });
@@ -126,7 +126,7 @@ public class Sensor {
 
         void TaskingPreCheckResponseEventHandler(object? _, MessageFormats.HostServices.Sensor.TaskingPreCheckResponse eventHandlerResponse) {
             if (eventHandlerResponse.ResponseHeader.TrackingId == taskingPreCheckRequest.RequestHeader.TrackingId) {
-                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
+                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId, eventHandlerResponse.ResponseHeader.Status);
 
                 response = eventHandlerResponse;
                 Client.SensorsTaskingPreCheckResponseEvent -= TaskingPreCheckResponseEventHandler;
@@ -155,7 +155,7 @@ public class Sensor {
             throw new TimeoutException($"Timed out waiting for a response from {TARGET_SERVICE_APP_ID}");
         }
 
-        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}')", nameof(TaskingPreCheckResponse), response.ResponseHeader.Status, taskingPreCheckRequest.RequestHeader.TrackingId, taskingPreCheckRequest.RequestHeader.CorrelationId);
+        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", nameof(TaskingPreCheckResponse), response.ResponseHeader.Status, taskingPreCheckRequest.RequestHeader.TrackingId, taskingPreCheckRequest.RequestHeader.CorrelationId, response.ResponseHeader.Status);
 
 
         return response;
@@ -201,7 +201,7 @@ public class Sensor {
 
         void TaskingResponseEventHandler(object? _, MessageFormats.HostServices.Sensor.TaskingResponse eventHandlerResponse) {
             if (eventHandlerResponse.ResponseHeader.TrackingId == taskingRequest.RequestHeader.TrackingId) {
-                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
+                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId, eventHandlerResponse.ResponseHeader.Status);
 
                 response = eventHandlerResponse;
                 Client.SensorsTaskingResponseEvent -= TaskingResponseEventHandler;
@@ -231,7 +231,7 @@ public class Sensor {
             throw new TimeoutException($"Timed out waiting for a response from {TARGET_SERVICE_APP_ID}");
         }
 
-        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}')", nameof(TaskingResponse), response.ResponseHeader.Status, taskingRequest.RequestHeader.TrackingId, taskingRequest.RequestHeader.CorrelationId);
+        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", nameof(TaskingResponse), response.ResponseHeader.Status, taskingRequest.RequestHeader.TrackingId, taskingRequest.RequestHeader.CorrelationId, response.ResponseHeader.Status);
 
 
         return response;

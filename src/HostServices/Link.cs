@@ -106,7 +106,7 @@ public class Link {
 
         void LinkResponseEventHandler(object? _, MessageFormats.HostServices.Link.LinkResponse eventHandlerResponse) {
             if (eventHandlerResponse.ResponseHeader.TrackingId == linkRequest.RequestHeader.TrackingId) {
-                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
+                Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId, eventHandlerResponse.ResponseHeader.Status);
 
                 if (eventHandlerResponse.ResponseHeader.Status != MessageFormats.Common.StatusCodes.Pending) {
                     response = eventHandlerResponse;
@@ -137,7 +137,7 @@ public class Link {
             throw new TimeoutException($"Timed out waiting for a response from {TARGET_SERVICE_APP_ID}");
         }
 
-        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}')", nameof(LinkResponse), response.ResponseHeader.Status, linkRequest.RequestHeader.TrackingId, linkRequest.RequestHeader.CorrelationId);
+        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", nameof(LinkResponse), response.ResponseHeader.Status, linkRequest.RequestHeader.TrackingId, linkRequest.RequestHeader.CorrelationId, response.ResponseHeader.Status);
 
         return response;
     });

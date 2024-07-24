@@ -56,7 +56,7 @@ public class Logging {
         if (waitForResponse == true) {
             void LogMessageResponseEventHandler(object? _, MessageFormats.Common.LogMessageResponse eventHandlerResponse) {
                 if (eventHandlerResponse.ResponseHeader.TrackingId == logMessage.RequestHeader.TrackingId) {
-                    Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
+                    Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId, eventHandlerResponse.ResponseHeader.Status);
                     response = eventHandlerResponse;
                     Client.LogMessageResponseEvent -= LogMessageResponseEventHandler; // Remove the callback so it's not called for future iterations
                 }
@@ -87,7 +87,7 @@ public class Logging {
             }
         }
 
-        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}')", nameof(LogMessageResponse), response.ResponseHeader.Status, logMessage.RequestHeader.TrackingId, logMessage.RequestHeader.CorrelationId);
+        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", nameof(LogMessageResponse), response.ResponseHeader.Status, logMessage.RequestHeader.TrackingId, logMessage.RequestHeader.CorrelationId, response.ResponseHeader.Status);
 
         return response;
     });
@@ -122,7 +122,7 @@ public class Logging {
         if (waitForResponse == true) {
             void TelemetryResponseEventHandler(object? _, MessageFormats.Common.TelemetryMetricResponse eventHandlerResponse) {
                 if (eventHandlerResponse.ResponseHeader.TrackingId == telemetryMessage.RequestHeader.TrackingId) {
-                    Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId);
+                    Logger.LogDebug("Message response received for '{messageType}'.  Status: '{status}' (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", eventHandlerResponse.GetType().Name, eventHandlerResponse.ResponseHeader.Status, eventHandlerResponse.ResponseHeader.TrackingId, eventHandlerResponse.ResponseHeader.CorrelationId, eventHandlerResponse.ResponseHeader.Status);
 
                     response = eventHandlerResponse;
                     Client.TelemetryMetricResponseEvent -= TelemetryResponseEventHandler; // Remove the callback so it's not called for future iterations
@@ -153,7 +153,7 @@ public class Logging {
             }
         }
 
-        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}')", nameof(TelemetryMetricResponse), response.ResponseHeader.Status, telemetryMessage.RequestHeader.TrackingId, telemetryMessage.RequestHeader.CorrelationId);
+        Logger.LogDebug("Returning '{messageType}' with status '{status}' to payload app (trackingId: '{trackingId}' / correlationId: '{correlationId}' / status: '{status}')", nameof(TelemetryMetricResponse), response.ResponseHeader.Status, telemetryMessage.RequestHeader.TrackingId, telemetryMessage.RequestHeader.CorrelationId, response.ResponseHeader.Status);
 
         return response;
     });
