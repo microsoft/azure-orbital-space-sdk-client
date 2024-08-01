@@ -218,6 +218,12 @@ public class Client {
                     case string messageType when messageType.Equals(typeof(MessageFormats.Common.LogMessageResponse).Name, StringComparison.CurrentCultureIgnoreCase):
                         MessageEventRouter(message: message as MessageFormats.Common.LogMessageResponse, sourceAppId: fullMessage.SourceAppId, eventHandler: LogMessageResponseEvent);
                         break;
+                    case string messageType when messageType.Equals(typeof(MessageFormats.Common.TelemetryMetricResponse).Name, StringComparison.CurrentCultureIgnoreCase):
+                        MessageEventRouter(message: message as MessageFormats.Common.TelemetryMetricResponse, sourceAppId: fullMessage.SourceAppId, eventHandler: TelemetryMetricResponseEvent);
+                        break;
+                    case string messageType when messageType.Equals(typeof(MessageFormats.Common.TelemetryMultiMetricResponse).Name, StringComparison.CurrentCultureIgnoreCase):
+                        MessageEventRouter(message: message as MessageFormats.Common.TelemetryMultiMetricResponse, sourceAppId: fullMessage.SourceAppId, eventHandler: TelemetryMultiMetricResponseEvent);
+                        break;
                     case string messageType when messageType.Equals(typeof(MessageFormats.HostServices.Sensor.SensorData).Name, StringComparison.CurrentCultureIgnoreCase):
                         MessageEventRouter(message: message as MessageFormats.HostServices.Sensor.SensorData, sourceAppId: fullMessage.SourceAppId, eventHandler: SensorDataEvent);
                         if (message != null && message is MessageFormats.HostServices.Sensor.SensorData) {
