@@ -35,6 +35,7 @@ public class Client {
     }
     public static EventHandler<MessageFormats.Common.LogMessageResponse>? LogMessageResponseEvent;
     public static EventHandler<MessageFormats.Common.TelemetryMetricResponse>? TelemetryMetricResponseEvent;
+    public static EventHandler<MessageFormats.Common.TelemetryMultiMetricResponse>? TelemetryMultiMetricResponseEvent;
     public static EventHandler<MessageFormats.HostServices.Sensor.SensorsAvailableResponse>? SensorsAvailableResponseEvent;
     public static EventHandler<MessageFormats.HostServices.Sensor.TaskingPreCheckResponse>? SensorsTaskingPreCheckResponseEvent;
     public static EventHandler<MessageFormats.HostServices.Sensor.TaskingResponse>? SensorsTaskingResponseEvent;
@@ -68,8 +69,8 @@ public class Client {
     /// </summary>
     public static void Shutdown() {
         _globalCancellationTokenSource.Cancel();
-        if (_client is null || _grpcHost is null) throw new Exception("Client is not provisioned.  Please deploy the client before trying to run this");
-        _grpcHost.StopAsync().Wait();
+        if (_client is not null && _grpcHost is not null)
+            _grpcHost.StopAsync().Wait();
     }
 
 
@@ -126,6 +127,8 @@ public class Client {
             services.AddAzureOrbitalFramework();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.HostServices.Sensor.SensorData>, MessageHandler<MessageFormats.HostServices.Sensor.SensorData>>();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.Common.LogMessageResponse>, MessageHandler<MessageFormats.Common.LogMessageResponse>>();
+            services.AddSingleton<Core.IMessageHandler<MessageFormats.Common.TelemetryMetricResponse>, MessageHandler<MessageFormats.Common.TelemetryMetricResponse>>();
+            services.AddSingleton<Core.IMessageHandler<MessageFormats.Common.TelemetryMultiMetricResponse>, MessageHandler<MessageFormats.Common.TelemetryMultiMetricResponse>>();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.HostServices.Sensor.SensorsAvailableResponse>, MessageHandler<MessageFormats.HostServices.Sensor.SensorsAvailableResponse>>();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.HostServices.Sensor.TaskingPreCheckResponse>, MessageHandler<MessageFormats.HostServices.Sensor.TaskingPreCheckResponse>>();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.HostServices.Sensor.TaskingResponse>, MessageHandler<MessageFormats.HostServices.Sensor.TaskingResponse>>();
@@ -134,8 +137,8 @@ public class Client {
             services.AddHostedService<ServiceCallback>();
         }).ConfigureLogging((logging) => {
             logging.AddProvider(new Microsoft.Extensions.Logging.SpaceFX.Logger.HostSvcLoggerProvider());
-            logging.AddConsole(options => {
-                options.DisableColors = true;
+            logging.AddSimpleConsole(options => {
+                options.ColorBehavior = Extensions.Logging.Console.LoggerColorBehavior.Disabled;
                 options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
             });
             logging.AddConfiguration(builder.Configuration.GetSection("Logging"));

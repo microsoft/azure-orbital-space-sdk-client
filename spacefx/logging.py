@@ -1,9 +1,11 @@
+from typing import Union
 import uuid
 import logging
 
 from spacefx.protos.common.Common_pb2 import \
     LogMessageResponse, \
-    TelemetryMetricResponse
+    TelemetryMetricResponse, \
+    TelemetryMultiMetricResponse
 
 import Microsoft.Azure.SpaceFx.MessageFormats.Common
 from spacefx._sdk_client import __sdk_logging, __sdk_utils
@@ -58,29 +60,76 @@ def send_complex_log_message(log_message: Microsoft.Azure.SpaceFx.MessageFormats
     return response
 
 
-def send_telemetry(metric_name: str, metric_value: int, response_timeout_seconds: int = 30, wait_for_response: bool = False) -> TelemetryMetricResponse:
+def send_telemetry(metric_name_or_object: Union[str, Microsoft.Azure.SpaceFx.MessageFormats.Common.TelemetryMetric], metric_value: int = None, response_timeout_seconds: int = 30, wait_for_response: bool = False) -> TelemetryMetricResponse:
     """
     Sends a telemetry message to the Logging Host Service
 
     Args:
-        metricName (str): message that will be logged within hostsvc-logging
-        metricValue (int): value of the metric to send
+        metric_name_or_object (Union[str, Microsoft.Azure.SpaceFx.MessageFormats.Common.TelemetryMetric]):
+            Either the metric name (str) or the Telemetry Metric object to be sent.
+        metric_value (int, optional): Value of the metric to send. Required if metric_or_log_message is a str.
         response_timeout_seconds (int, optional): the number of seconds to wait for a successful TelemetryMetricResponse
         wait_for_response (bool, optional): enable/disable whether or not to wait for a TelemetryMetricResponse from the Logging Service.  Disabled by default.
     Returns:
-        response (TelemetryMetricResponse): A successful TelemetryMetricResponse, or the last heard TelemetryMetricResponse during the timeout period
+        response (TelemetryMetricResponse): The TelemetryMetricResponse received from Logging Service
     Raises:
-        TimeoutError: Raises a TimeoutError if no LogResponse message was heard during the timeout period
+        TimeoutError: Raises a TimeoutError if no response message was heard during the timeout period
     """
-    _task = __sdk_logging.SendTelemetry(metricName=metric_name, metricValue=metric_value, responseTimeoutSecs=response_timeout_seconds, wait_for_response=wait_for_response)
-    _task.Wait()
+
+    if isinstance(metric_name_or_object, str):
+        if metric_value is None:
+            raise ValueError("metric_value must be provided when sending a telemetry metric.")
+
+        # Send telemetry metric
+        _task = __sdk_logging.SendTelemetry(metricName=metric_name_or_object, metricValue=metric_value, responseTimeoutSecs=response_timeout_seconds, wait_for_response=wait_for_response)
+        _task.Wait()
+
+
+    elif isinstance(metric_name_or_object, Microsoft.Azure.SpaceFx.MessageFormats.Common.LogMeTelemetryMetricssage):
+        # Send log message
+        telemetry_message = metric_name_or_object
+        telemetry_message.RequestHeader = telemetry_message.RequestHeader or Microsoft.Azure.SpaceFx.MessageFormats.Common.RequestHeader()
+        telemetry_message.RequestHeader.TrackingId = telemetry_message.RequestHeader.TrackingId or str(uuid.uuid4())
+        telemetry_message.RequestHeader.CorrelationId = telemetry_message.RequestHeader.CorrelationId or telemetry_message.RequestHeader.TrackingId
+
+        # Assuming similar logic to send the log message and wait for response
+        _task = __sdk_logging.SendTelemetry(telemetryMessage=telemetry_message, responseTimeoutSecs=response_timeout_seconds, wait_for_response=wait_for_response)
+        _task.Wait()
+
 
     response = TelemetryMetricResponse()
     result_bytes = bytes(__sdk_utils.ConvertProtoToBytes(_task.Result))
     response.ParseFromString(result_bytes)
-
     return response
 
+def send_telemetrymulti(telemetry_multi: Microsoft.Azure.SpaceFx.MessageFormats.Common.TelemetryMultiMetric, response_timeout_seconds: int = 30, wait_for_response: bool = False) -> TelemetryMultiMetricResponse:
+    """
+    Sends a telemetry message to the Logging Host Service
+
+    Args:
+        telemetryMulti (Microsoft.Azure.SpaceFx.MessageFormats.Common.TelemetryMultiMetric): The TelemetryMultiMetric object to be sent.
+        response_timeout_seconds (int, optional): the number of seconds to wait for a successful TelemetryMetricResponse
+        wait_for_response (bool, optional): enable/disable whether or not to wait for a TelemetryMetricResponse from the Logging Service.  Disabled by default.
+    Returns:
+        response (TelemetryMultiMetricResponse): TelemetryMultiMetricResponse received from Logging Service
+    Raises:
+        TimeoutError: Raises a TimeoutError if no response message was heard during the timeout period
+    """
+
+        # Send log message
+    telemetry_multi.RequestHeader = telemetry_multi.RequestHeader or Microsoft.Azure.SpaceFx.MessageFormats.Common.RequestHeader()
+    telemetry_multi.RequestHeader.TrackingId = telemetry_multi.RequestHeader.TrackingId or str(uuid.uuid4())
+    telemetry_multi.RequestHeader.CorrelationId = telemetry_multi.RequestHeader.CorrelationId or telemetry_multi.RequestHeader.TrackingId
+
+    # Assuming similar logic to send the log message and wait for response
+    _task = __sdk_logging.SendMultiTelemetry(telemetryMessage=telemetry_multi, responseTimeoutSecs=response_timeout_seconds, wait_for_response=wait_for_response)
+    _task.Wait()
+
+
+    response = TelemetryMultiMetricResponse()
+    result_bytes = bytes(__sdk_utils.ConvertProtoToBytes(_task.Result))
+    response.ParseFromString(result_bytes)
+    return response
 
 # This is inteded to be used as a drop-in replacement for the default python logger class
 # Use via spacefx.logger rather than accessing the logger directly
