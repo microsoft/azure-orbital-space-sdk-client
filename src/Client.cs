@@ -206,10 +206,10 @@ public class Client {
         /// <param name="fullMessage"></param>
         public void MessageReceived(T message, MessageFormats.Common.DirectToApp fullMessage) {
             using (var scope = _serviceProvider.CreateScope()) {
-                _logger.LogInformation($"Receieved message type '{typeof(T).Name}'");
+                _logger.LogDebug($"Receieved message type '{typeof(T).Name}'");
 
                 if (message == null || EqualityComparer<T>.Default.Equals(message, default)) {
-                    _logger.LogInformation("Received empty message '{messageType}' from '{appId}'.  Discarding message.", typeof(T).Name, fullMessage.SourceAppId);
+                    _logger.LogDebug("Received empty message '{messageType}' from '{appId}'.  Discarding message.", typeof(T).Name, fullMessage.SourceAppId);
                     return;
                 }
 
@@ -232,7 +232,7 @@ public class Client {
                     case string messageType when messageType.Equals(typeof(MessageFormats.HostServices.Sensor.SensorData).Name, StringComparison.CurrentCultureIgnoreCase):
                         MessageEventRouter(message: message as MessageFormats.HostServices.Sensor.SensorData, sourceAppId: fullMessage.SourceAppId, eventHandler: SensorDataEvent);
                         if (message != null && message is MessageFormats.HostServices.Sensor.SensorData) {
-                            _logger.LogInformation($"Routing message type '{typeof(T).Name}' to Python event handler");
+                            _logger.LogDebug($"Routing message type '{typeof(T).Name}' to Python event handler");
                             SensorDataEventPython?.Invoke(message.ToByteArray());
                         }
                         break;
