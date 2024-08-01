@@ -35,6 +35,7 @@ public class Client {
     }
     public static EventHandler<MessageFormats.Common.LogMessageResponse>? LogMessageResponseEvent;
     public static EventHandler<MessageFormats.Common.TelemetryMetricResponse>? TelemetryMetricResponseEvent;
+    public static EventHandler<MessageFormats.Common.TelemetryMultiMetricResponse>? TelemetryMultiMetricResponseEvent;
     public static EventHandler<MessageFormats.HostServices.Sensor.SensorsAvailableResponse>? SensorsAvailableResponseEvent;
     public static EventHandler<MessageFormats.HostServices.Sensor.TaskingPreCheckResponse>? SensorsTaskingPreCheckResponseEvent;
     public static EventHandler<MessageFormats.HostServices.Sensor.TaskingResponse>? SensorsTaskingResponseEvent;
@@ -43,6 +44,11 @@ public class Client {
     public static EventHandler<MessageFormats.HostServices.Link.LinkResponse>? LinkResponseEvent;
     public delegate void SensorDataEventPythonHandler(byte[] sensorData);
     public static event SensorDataEventPythonHandler? SensorDataEventPython;
+
+    /// <summary>(Optional) Provide a boolean response for the integrated app healthcheck.  If used, any value other than "true" will signify the app is in a failed state and should be terminated.</summary>
+    public delegate bool IsAppHealthyDelegate();
+    public static IsAppHealthyDelegate? IsAppHealthy;
+
 
     /// <summary>
     /// Instantiates the SDK Client and allows for messages to be sent and received
@@ -68,8 +74,8 @@ public class Client {
     /// </summary>
     public static void Shutdown() {
         _globalCancellationTokenSource.Cancel();
-        if (_client is null || _grpcHost is null) throw new Exception("Client is not provisioned.  Please deploy the client before trying to run this");
-        _grpcHost.StopAsync().Wait();
+        if (_client is not null && _grpcHost is not null)
+            _grpcHost.StopAsync().Wait();
     }
 
 
@@ -126,6 +132,8 @@ public class Client {
             services.AddAzureOrbitalFramework();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.HostServices.Sensor.SensorData>, MessageHandler<MessageFormats.HostServices.Sensor.SensorData>>();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.Common.LogMessageResponse>, MessageHandler<MessageFormats.Common.LogMessageResponse>>();
+            services.AddSingleton<Core.IMessageHandler<MessageFormats.Common.TelemetryMetricResponse>, MessageHandler<MessageFormats.Common.TelemetryMetricResponse>>();
+            services.AddSingleton<Core.IMessageHandler<MessageFormats.Common.TelemetryMultiMetricResponse>, MessageHandler<MessageFormats.Common.TelemetryMultiMetricResponse>>();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.HostServices.Sensor.SensorsAvailableResponse>, MessageHandler<MessageFormats.HostServices.Sensor.SensorsAvailableResponse>>();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.HostServices.Sensor.TaskingPreCheckResponse>, MessageHandler<MessageFormats.HostServices.Sensor.TaskingPreCheckResponse>>();
             services.AddSingleton<Core.IMessageHandler<MessageFormats.HostServices.Sensor.TaskingResponse>, MessageHandler<MessageFormats.HostServices.Sensor.TaskingResponse>>();
@@ -134,8 +142,8 @@ public class Client {
             services.AddHostedService<ServiceCallback>();
         }).ConfigureLogging((logging) => {
             logging.AddProvider(new Microsoft.Extensions.Logging.SpaceFX.Logger.HostSvcLoggerProvider());
-            logging.AddConsole(options => {
-                options.DisableColors = true;
+            logging.AddSimpleConsole(options => {
+                options.ColorBehavior = Extensions.Logging.Console.LoggerColorBehavior.Disabled;
                 options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
             });
             logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
@@ -150,6 +158,7 @@ public class Client {
         _grpcHost.UseRouting();
         _grpcHost.UseEndpoints(endpoints => {
             endpoints.MapGrpcService<Core.Services.MessageReceiver>();
+            endpoints.MapGrpcHealthChecksService();
             endpoints.MapGet("/", async context => {
                 await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
             });
@@ -197,10 +206,10 @@ public class Client {
         /// <param name="fullMessage"></param>
         public void MessageReceived(T message, MessageFormats.Common.DirectToApp fullMessage) {
             using (var scope = _serviceProvider.CreateScope()) {
-                _logger.LogInformation($"Receieved message type '{typeof(T).Name}'");
+                _logger.LogDebug($"Receieved message type '{typeof(T).Name}'");
 
                 if (message == null || EqualityComparer<T>.Default.Equals(message, default)) {
-                    _logger.LogInformation("Received empty message '{messageType}' from '{appId}'.  Discarding message.", typeof(T).Name, fullMessage.SourceAppId);
+                    _logger.LogDebug("Received empty message '{messageType}' from '{appId}'.  Discarding message.", typeof(T).Name, fullMessage.SourceAppId);
                     return;
                 }
 
@@ -214,10 +223,16 @@ public class Client {
                     case string messageType when messageType.Equals(typeof(MessageFormats.Common.LogMessageResponse).Name, StringComparison.CurrentCultureIgnoreCase):
                         MessageEventRouter(message: message as MessageFormats.Common.LogMessageResponse, sourceAppId: fullMessage.SourceAppId, eventHandler: LogMessageResponseEvent);
                         break;
+                    case string messageType when messageType.Equals(typeof(MessageFormats.Common.TelemetryMetricResponse).Name, StringComparison.CurrentCultureIgnoreCase):
+                        MessageEventRouter(message: message as MessageFormats.Common.TelemetryMetricResponse, sourceAppId: fullMessage.SourceAppId, eventHandler: TelemetryMetricResponseEvent);
+                        break;
+                    case string messageType when messageType.Equals(typeof(MessageFormats.Common.TelemetryMultiMetricResponse).Name, StringComparison.CurrentCultureIgnoreCase):
+                        MessageEventRouter(message: message as MessageFormats.Common.TelemetryMultiMetricResponse, sourceAppId: fullMessage.SourceAppId, eventHandler: TelemetryMultiMetricResponseEvent);
+                        break;
                     case string messageType when messageType.Equals(typeof(MessageFormats.HostServices.Sensor.SensorData).Name, StringComparison.CurrentCultureIgnoreCase):
                         MessageEventRouter(message: message as MessageFormats.HostServices.Sensor.SensorData, sourceAppId: fullMessage.SourceAppId, eventHandler: SensorDataEvent);
                         if (message != null && message is MessageFormats.HostServices.Sensor.SensorData) {
-                            _logger.LogInformation($"Routing message type '{typeof(T).Name}' to Python event handler");
+                            _logger.LogDebug($"Routing message type '{typeof(T).Name}' to Python event handler");
                             SensorDataEventPython?.Invoke(message.ToByteArray());
                         }
                         break;
@@ -246,7 +261,7 @@ public class Client {
         }
     }
 
-    public class ServiceCallback : BackgroundService {
+    public class ServiceCallback : BackgroundService, Core.IMonitorableService {
         private readonly ILogger<ServiceCallback> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly Microsoft.Azure.SpaceFx.Core.Client _client;
@@ -255,6 +270,26 @@ public class Client {
             _logger = logger;
             _serviceProvider = serviceProvider;
             _client = client;
+        }
+
+        public bool IsHealthy() {
+            if (IsAppHealthy == null) {
+                _logger.LogTrace("No AppHealthCheck event handler registered. Returning default value of 'true'.");
+                return true;
+            }
+
+            _logger.LogTrace("Received Health Check request from cluster. Triggering IsAppHealthy event handler.");
+            try {
+                bool isHealthy = IsAppHealthy();
+                _logger.LogDebug($"IsAppHealthy returned '{isHealthy}'.");
+                if (!isHealthy) {
+                    _logger.LogCritical("IsAppHealthy returned 'false' and is unhealthy. Check logs for more details.");
+                }
+                return isHealthy;
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Exception calling IsAppHealthy. Setting response to false.");
+                return false;
+            }
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken) {

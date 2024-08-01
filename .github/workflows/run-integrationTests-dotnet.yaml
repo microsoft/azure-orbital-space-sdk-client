@@ -106,31 +106,33 @@ jobs:
 
         echo "Starting the integration test"
         echo "Running: docker exec ${DEV_CONTAINER_NAME} bash -c \"/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678\""
-        docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678" &
+        docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678"
 
-        echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"/workspace/${{ inputs.app_name }}/.git/spacefx-dev/dotnet/dotnet test --verbosity detailed /workspace/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspace/${{ inputs.app_name }}/.git/test-results.xml\"\" &"
-        (
-            # Reroute the stdout to a file so we can uniquely identify this run
-            trap "" HUP
-            exec 0< /dev/null
-            exec 1> "${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout"
-            exec 2>&1
+        # echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"/workspace/${{ inputs.app_name }}/.git/spacefx-dev/dotnet/dotnet test --verbosity detailed /workspace/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspace/${{ inputs.app_name }}/.git/test-results.xml\"\" &"
+        # (
+        #     # Reroute the stdout to a file so we can uniquely identify this run
+        #     trap "" HUP
+        #     exec 0< /dev/null
+        #     exec 1> "${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout"
+        #     exec 2>&1
 
-            k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c "/workspace/${{ inputs.app_name }}/.git/spacefx-dev/dotnet/dotnet test --verbosity detailed /workspace/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspace/${{ inputs.app_name }}/.git/test-results.xml\""
-        ) &
+        #     k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c "/workspace/${{ inputs.app_name }}/.git/spacefx-dev/dotnet/dotnet test --verbosity detailed /workspace/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspace/${{ inputs.app_name }}/.git/test-results.xml\""
+        # ) &
 
-        client_pid=$!
+        k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c "/workspace/${{ inputs.app_name }}/.git/spacefx-dev/dotnet/dotnet test --verbosity detailed /workspace/${{ inputs.app_name }}/test/integrationTests/bin/Debug/net6.0/integrationTests.dll --logger \"junit;LogFileName=/workspace/${{ inputs.app_name }}/.git/test-results.xml\""
 
-        echo "Waiting for the integration test host to finish..."
+        # client_pid=$!
 
-        client_pid_return_code=0
-        wait "$client_pid"
-        client_pid_return_code=$?
+        # echo "Waiting for the integration test host to finish..."
 
-        echo "Client process complete with return code: $client_pid_return_code"
+        # client_pid_return_code=0
+        # wait "$client_pid"
+        # client_pid_return_code=$?
 
-        echo "Outputting logs from the integration test client..."
-        cat ${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout
+        # echo "Client process complete with return code: $client_pid_return_code"
+
+        # echo "Outputting logs from the integration test client..."
+        # cat ${PWD}/.git/logs/${{ inputs.app_name }}.log.stdout
         echo ""
         echo "--------------------"
         echo ""
@@ -140,10 +142,10 @@ jobs:
           exit 1
         fi
 
-        if [[ $client_pid_return_code -gt 0 ]]; then
-          echo "Integration tests failed.  Exiting with code 1."
-          exit 1
-        fi
+        # if [[ $client_pid_return_code -gt 0 ]]; then
+        #   echo "Integration tests failed.  Exiting with code 1."
+        #   exit 1
+        # fi
 
         echo "Test results found."
 
