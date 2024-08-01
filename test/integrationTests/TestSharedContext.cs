@@ -8,6 +8,7 @@ namespace Microsoft.Azure.SpaceFx.SDK.IntegrationTests;
 public class TestSharedContext : IDisposable {
     private static TestSharedContext TextContext { get; set; } = null!;
     private static bool IS_PROVISIONED = false;
+    public bool HEALTH_CHECK_RECEIVED = false;
     internal static TimeSpan MAX_TIMESPAN_TO_WAIT_FOR_MSG = TimeSpan.FromSeconds(90);
     public readonly string GenericGuid = Guid.NewGuid().ToString();
     public readonly int GenericInt = 12345;
@@ -27,13 +28,18 @@ public class TestSharedContext : IDisposable {
 
         Client.Build();
         Client.WaitForOnline(MAX_TIMESPAN_TO_WAIT_FOR_MSG);
+
+        Client.IsAppHealthy = () => {
+            HEALTH_CHECK_RECEIVED = true;
+            return true; // Assume the app is healthy
+        };
+
+
+
         IS_PROVISIONED = true;
 
     }
 
-    public static void WritePropertyLineToScreen(string testName, string propertyName) {
-        Console.WriteLine($"[{testName}] testing property '{propertyName}'");
-    }
 
     public void Dispose() {
         GC.SuppressFinalize(this);

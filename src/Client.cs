@@ -45,6 +45,11 @@ public class Client {
     public delegate void SensorDataEventPythonHandler(byte[] sensorData);
     public static event SensorDataEventPythonHandler? SensorDataEventPython;
 
+    /// <summary>(Optional) Provide a boolean response for the integrated app healthcheck.  If used, any value other than "true" will signify the app is in a failed state and should be terminated.</summary>
+    public delegate bool IsAppHealthyDelegate();
+    public static IsAppHealthyDelegate? IsAppHealthy;
+
+
     /// <summary>
     /// Instantiates the SDK Client and allows for messages to be sent and received
     /// </summary>
@@ -256,7 +261,7 @@ public class Client {
         }
     }
 
-    public class ServiceCallback : BackgroundService {
+    public class ServiceCallback : BackgroundService, Core.IMonitorableService {
         private readonly ILogger<ServiceCallback> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly Microsoft.Azure.SpaceFx.Core.Client _client;
@@ -265,6 +270,26 @@ public class Client {
             _logger = logger;
             _serviceProvider = serviceProvider;
             _client = client;
+        }
+
+        public bool IsHealthy() {
+            if (IsAppHealthy == null) {
+                _logger.LogTrace("No AppHealthCheck event handler registered. Returning default value of 'true'.");
+                return true;
+            }
+
+            _logger.LogTrace("Received Health Check request from cluster. Triggering IsAppHealthy event handler.");
+            try {
+                bool isHealthy = IsAppHealthy();
+                _logger.LogInformation($"IsAppHealthy returned '{isHealthy}'.");
+                if (!isHealthy) {
+                    _logger.LogCritical("IsAppHealthy returned 'false' and is unhealthy. Check logs for more details.");
+                }
+                return isHealthy;
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Exception calling IsAppHealthy. Setting response to false.");
+                return false;
+            }
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken) {
