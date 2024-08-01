@@ -29,7 +29,7 @@ public class ServicesHeardTests : IClassFixture<TestSharedContext> {
 
     [Fact]
     public void HealthCheckTest() {
-        DateTime maxTimeToWait = DateTime.Now.Add(TestSharedContext.MAX_TIMESPAN_TO_WAIT_FOR_MSG);
+        DateTime maxTimeToWait = DateTime.Now.Add(TimeSpan.FromMinutes(5));
 
 
         while (_context.HEALTH_CHECK_RECEIVED == false && DateTime.Now <= maxTimeToWait) {

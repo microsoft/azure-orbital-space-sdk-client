@@ -107,7 +107,7 @@ jobs:
         echo "Starting the integration test"
 
         echo "Running: docker exec ${DEV_CONTAINER_NAME} bash -c \"/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678\""
-        docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678" &
+        docker exec ${DEV_CONTAINER_NAME} bash -c "/spacefx-dev/debugShim-deploy.sh --debug_shim ${{ inputs.app_name }} --python_file /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py --disable_plugin_configs --port 5678"
         echo "k3s kubectl exec -n payload-app deploy/${{ inputs.app_name }} -- bash -c \"cd /workspace/${{ inputs.app_name }}/test/integrationTests_python && /python3 /workspace/${{ inputs.app_name }}/test/integrationTests_python/integrationTest.py\" &"
         (
             # Reroute the stdout to a file so we can uniquely identify this run
@@ -119,7 +119,7 @@ jobs:
         ) &
 
         client_pid=$!
-        
+
         echo "Waiting for the integration test host to finish..."
         client_pid_return_code=0
         wait "$client_pid"
@@ -133,4 +133,3 @@ jobs:
 
         exit $client_pid_return_code
         echo "--------------------"
-       

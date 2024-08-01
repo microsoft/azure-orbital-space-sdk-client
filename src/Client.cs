@@ -281,7 +281,7 @@ public class Client {
             _logger.LogTrace("Received Health Check request from cluster. Triggering IsAppHealthy event handler.");
             try {
                 bool isHealthy = IsAppHealthy();
-                _logger.LogInformation($"IsAppHealthy returned '{isHealthy}'.");
+                _logger.LogDebug($"IsAppHealthy returned '{isHealthy}'.");
                 if (!isHealthy) {
                     _logger.LogCritical("IsAppHealthy returned 'false' and is unhealthy. Check logs for more details.");
                 }
