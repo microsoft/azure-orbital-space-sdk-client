@@ -122,10 +122,13 @@ public class Client {
 
         var builder = WebApplication.CreateBuilder();
         // Load the configuration being supplicated by the cluster first
-        builder.Configuration.AddJsonFile(Path.Combine(Environment.GetEnvironmentVariable("SPACEFX_CONFIG_DIR"), "config", "appsettings.json"), optional: true, reloadOnChange: false);
+        builder.Configuration.AddJsonFile(Path.Combine("{env:SPACEFX_CONFIG_DIR}", "config", "appsettings.json"), optional: true, reloadOnChange: false);
 
         // Load any local appsettings incase they're overriding the cluster values
         builder.Configuration.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"), optional: true, reloadOnChange: false);
+
+        // Load any local appsettings incase they're overriding the cluster values
+        builder.Configuration.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.{env:DOTNET_ENVIRONMENT}.json"), optional: true, reloadOnChange: false);
 
 
 
