@@ -12,20 +12,25 @@ def search_file(filename, search_path):
         return str(file_path)
     return None
 
+# Check if the default dotnet shared directory is present
+# and if so, use it to load the runtimeconfig.json
+DOTNET_DIR="/usr/share/dotnet/shared"
 
-# Find the dotnet directory
-DOTNET_BIN = shutil.which("dotnet")
-if not DOTNET_BIN:
-    raise ValueError(f"Unable to find an installation of dotnet.  Please install dotnet so it's found within the system PATH")
-
-# Resolve the path to the dotnet binary
-DOTNET_BIN = str(Path(DOTNET_BIN).resolve(strict=True))
-
-# Find the shared directory
-DOTNET_DIR = os.path.join(os.path.dirname(DOTNET_BIN), "shared")
 if not os.path.exists(DOTNET_DIR):
-    raise ValueError(f"dotnet was found at {DOTNET_BIN}, but unable to find the shared directory '{DOTNET_DIR}'.  Please check your dotnet installation and make sure the shared folder is present")
+    # didn't find the default directory, try to find it in the PATH
 
+    # Find the dotnet directory
+    DOTNET_BIN = shutil.which("dotnet")
+    if not DOTNET_BIN:
+        raise ValueError(f"Unable to find an installation of dotnet.  Please install dotnet so it's found within the system PATH")
+
+    # Resolve the path to the dotnet binary
+    DOTNET_BIN = str(Path(DOTNET_BIN).resolve(strict=True))
+
+    # Find the shared directory
+    DOTNET_DIR = os.path.join(os.path.dirname(DOTNET_BIN), "shared")
+    if not os.path.exists(DOTNET_DIR):
+        raise ValueError(f"dotnet was found at {DOTNET_BIN}, but unable to find the shared directory '{DOTNET_DIR}'.  Please check your dotnet installation and make sure the shared folder is present")
 
 # Recursively search and load the runtimeconfig.json - this allows for dotnet minor version changes
 runtime_config_file = search_file("Microsoft.AspNetCore.App.runtimeconfig.json", DOTNET_DIR)
